@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>8TRD150 - Exercices</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
+    <script src="https://cdn.rawgit.com/evanw/node-source-map-support/v0.5.0/browser-source-map-support.js"></script>
+    <script>
+        require.config({
+            paths: {
+                'gl-matrix': 'https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.4.0/gl-matrix'
+            }
+        });
+        require(['browser-source-map-support'], (sourceMapSupport) => {
+            sourceMapSupport.install();
+        });
+    </script>
+    <script src="dist/merged.js"></script>
+    <script>
+        function onLoad() {
+            let p = Promise.resolve();
+            for (let i = 0; i < document.images.length; ++i) {
+                const img = document.images[i];
+                p = p.then(() => {
+                    return new Promise((resolve) => {
+                        if (img.complete) {
+                            resolve();
+                        } else {
+                            img.onload = resolve;
+                        }
+                    });
+                });
+            }
+
+            let requestFullScreen = () => {};
+            require(['main', 'exercice'], (main, logic) => {
+                requestFullScreen = main.requestFullScreen;
+                p.then(() => {
+                    main.run("canvas", new logic.Exercice());
+                });
+            });
+        }
+    </script>
+</head>
+
+<body onload="onLoad();">
+    <div>
+        <button onclick="requestFullScreen();">Plein écran</button>
+    </div>
+    <canvas id="canvas" width="768" height="576"></canvas>
+</body>
+
+</html>
