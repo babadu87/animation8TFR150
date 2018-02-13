@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div style="border: 1px solid black; width: 10em;">
+    <p><a href="README.md">Instructions</a></p>
+    <p><a href="#tests">Tests</a></p>
+    <p><a href="#visualisation">Visualisation</a></p>
+  </div>
+  <a id="tests"><h1>Tests</h1></a>
+  <div id="mocha"></div>
+  <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+  <script src="https://cdn.rawgit.com/chaijs/chai/4.1.2/chai.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
+  <script src="https://cdn.rawgit.com/evanw/node-source-map-support/v0.5.0/browser-source-map-support.js"></script>
+  <script>
+    require(['browser-source-map-support'], (sourceMapSupport) => {
+      sourceMapSupport.install();
+    });
+    define("mocha", mocha);
+    define("chai", chai);
+    mocha.setup({
+      ui: 'bdd',
+    });
+  </script>
+  <script src="dist/merged.js"></script>
+  <script>
+    const testModuleNames = [
+      "vec",
+      "matrix",
+    ];
+    const moduleNames = [];
+    for (let name of testModuleNames)
+      moduleNames.push(`tests/${name}`);
+    require(moduleNames, () => {
+      mocha.run();
+    })
+  </script>
+
+  <a id="visualisation">
+    <h1>Visualisation</h1>
+  </a>
+  <div>
+    <center>
+      <canvas id="view" width="300" height="300"></canvas>
+    </center>
+    <p>Point: (
+      <span id="point"></span>)
+    </p>
+    <script src="visu.js"></script>
+    <p>Translation: (x:
+      <input type="text" size="4" id="dx" value="0">, y:
+      <input type="text" size="4" id="dy" value="0">, z:
+      <input type="text" size="4" id="dz" value="0">)
+      <button onclick="DoTranslate();">Appliquer</button>
+    </p>
+    <p>Échelle: (x:
+      <input type="text" size="4" id="sx" value="1">, y:
+      <input type="text" size="4" id="sy" value="1">, z:
+      <input type="text" size="4" id="sz" value="1">)
+      <button onclick="DoScale();">Appliquer</button>
+    </p>
+    <p>Rotation: angle:
+      <input type="text" size="4" id="angle" value="0"> deg
+      <button onclick="RotPitch();">Pitch</button>
+      <button onclick="RotYaw();">Yaw</button>
+      <button onclick="RotRoll();">Roll</button>
+    </p>
+  </div>
+</body>
+
+</html>

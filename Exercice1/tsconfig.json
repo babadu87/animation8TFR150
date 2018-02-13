@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "types":[
+      "mocha"
+    ]
+  },
+  "compileOnSave": true,
+  "include": [
+    "./src/**/*"
+  ]
+}
