@@ -1,7 +1,7 @@
 import { Logic, loadAsync } from './main';
 import { mat4 } from 'gl-matrix';
-
-let GL: WebGLRenderingContext;
+import { GL, SetGL, IModel } from './Modeles/ModeleBase';
+import { TriangleBase, TriangleDegrade } from './Modeles/Triangle';
 
 export class Exercice extends Logic {
   private vertexBuffer: WebGLBuffer;
