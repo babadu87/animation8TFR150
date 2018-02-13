@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>8TRD150 - Exercices</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
+    <script src="https://cdn.rawgit.com/evanw/node-source-map-support/v0.5.0/browser-source-map-support.js"></script>
+    <script>
+        require.config({
+            paths: {
+                'gl-matrix': 'https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.4.0/gl-matrix'
+            }
+        });
+        require(['browser-source-map-support'], (sourceMapSupport) => {
+            sourceMapSupport.install();
+        });
+    </script>
+    <script src="dist/merged.js"></script>
+    <script>
+        let updateContent = () => {};
+        let requestFullScreen = () => {};
+
+        function onLoad() {
+            let p = Promise.resolve();
+            for (let i = 0; i < document.images.length; ++i) {
+                const img = document.images[i];
+                p = p.then(() => {
+                    return new Promise((resolve) => {
+                        if (img.complete) {
+                            resolve();
+                        } else {
+                            img.onload = resolve;
+                        }
+                    });
+                });
+            }
+
+            require(['main', 'exercice'], (main, logic) => {
+                requestFullScreen = main.requestFullScreen;
+                p.then(() => {
+                    const exercice = new logic.Exercice();
+                    updateContent = (val) => exercice.updateContent(val);
+                    updateContent(document.getElementById('currentModel').value);
+                    main.run("canvas", exercice);
+                });
+            });
+        }
+    </script>
+</head>
+
+<body onload="onLoad();">
+    <div>
+        <button onclick="requestFullScreen();">Plein écran</button>
+    </div>
+    <canvas id="canvas" width="768" height="576"></canvas>
+    <select id="currentModel" onchange="updateContent(this.value);">
+        <option value="redTriangle">(Référence) Triangle Rouge</option>
+        <option value="blueSquare">2.1 Carré bleu</option>
+        <option value="colorTriangle">2.2 Triangle coloré</option>
+        <option value="yellowParabola">2.3 Parabole jaune</option>
+        <option value="yellowParabola2">2.4 Parabole oscillante</option>
+        <option value="texturedTriangle">(Référence) Triangle texturé</option>
+        <option value="texturedSquare">3.1 Carré texturé</option>
+    </select>
+    <div style="display: none">
+        <img id="img_tree" src="images/tree.png" />
+        <img id="img_deformation" src="images/deformation.png" />
+        <img id="img_intensity" src="images/intensity.png" />
+        <img id="img_altitude" src="images/altitude.png" />
+        <img id="img_terrain" src="images/terrain.png" />
+    </div>
+</body>
+
+</html>
