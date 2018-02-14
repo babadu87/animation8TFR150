@@ -1,11 +1,13 @@
 import { GL, BaseModel } from './modelTemplate';
 import { mat4 } from 'gl-matrix';
+import { vec4 } from 'gl-matrix';
 
 export class RefTriangle extends BaseModel {
   private angle = 0;
 
   vsSource = 'base.vert';
   fsSource = 'base.frag';
+  private CouleurLoc: WebGLUniformLocation;
   vertices = [
     -0.5, Math.sin(Math.PI / 3), 0,
     1, 0, 0,
@@ -13,10 +15,18 @@ export class RefTriangle extends BaseModel {
   ];
   verticesStride = 3 * 4; // 3 composants * 32 bits
   indices = [0, 1, 2];
-
+  
   updateLogic(delta: number) {
     this.angle += delta;
     mat4.fromZRotation(this.modelView, this.angle);
+  }
+  postLoad(shader: WebGLProgram) {
+    this.CouleurLoc = GL.getUniformLocation(shader, 'Couleur');
+    return Promise.resolve();
+  }
+
+  drawSetup() {
+    GL.uniform4fv(this.CouleurLoc, vec4.fromValues(1.0, 0.0, 0.0, 1.0));
   }
 };
 
