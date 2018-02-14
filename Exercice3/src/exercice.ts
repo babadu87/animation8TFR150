@@ -3,12 +3,13 @@ import { GL, SetGL, IModel } from './models/modelTemplate';
 import { RefTriangle, TexturedTriangle } from './models/refTriangle';
 import { RefParabole } from './models/Parabole';
 import { mat4 } from 'gl-matrix';
+import { RefCarre } from './models/refCarre';
 
 export class Exercice extends Logic {
   private currentModel: IModel;
   private models: { [name: string]: IModel } = {
     redTriangle: new RefTriangle(),     // (Référence) Triangle Rouge
-    blueSquare: undefined,      // 2.1 Carré bleu
+    blueSquare: new RefCarre(),      // 2.1 Carré bleu
     colorTriangle: undefined,   // 2.2 Triangle coloré
     yellowParabola: new RefParabole(),  // 2.3 Parabole jaune
     yellowParabola2: undefined, // 2.4 Parabole oscillante
