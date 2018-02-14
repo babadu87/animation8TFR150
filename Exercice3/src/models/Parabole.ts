@@ -31,8 +31,8 @@ export class RefParabole extends BaseModel {
       let NbSommet:number = 0;
       this.vertices.push(-0.5, this.equation(-0.5), 0.0);
       NbSommet++;
-    for(let i:number = -10; i<11; i++){
-        this.vertices.push(0.5*(i/11), this.equation(0.5*(i/11)), 0.0);
+    for(let i:number = -5; i<6; i++){
+        this.vertices.push(0.5*(i/6), this.equation(0.5*(i/6)), 0.0);
         NbSommet++;
     }
     this.vertices.push(0.5, this.equation(0.5), 0.0);
