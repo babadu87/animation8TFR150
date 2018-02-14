@@ -52,7 +52,6 @@ export class TexturedTriangle extends RefTriangle {
     GL.activeTexture(GL.TEXTURE0);
     GL.bindTexture(GL.TEXTURE_2D, this.texture);
     GL.uniform1i(this.textureUniform, 0);
-
     GL.enable(GL.BLEND);
     GL.blendFunc(GL.ONE, GL.ZERO);
   }

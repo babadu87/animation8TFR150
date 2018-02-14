@@ -1,13 +1,14 @@
 import { Logic, loadAsync } from './main';
 import { GL, SetGL, IModel } from './models/modelTemplate';
 import { RefTriangle, TexturedTriangle } from './models/refTriangle';
+import { RefCarre } from './models/refCarre';
 import { mat4 } from 'gl-matrix';
 
 export class Exercice extends Logic {
   private currentModel: IModel;
   private models: { [name: string]: IModel } = {
     redTriangle: new RefTriangle(),     // (Référence) Triangle Rouge
-    blueSquare: undefined,      // 2.1 Carré bleu
+    blueSquare: new RefCarre(),      // 2.1 Carré bleu
     colorTriangle: undefined,   // 2.2 Triangle coloré
     yellowParabola: undefined,  // 2.3 Parabole jaune
     yellowParabola2: undefined, // 2.4 Parabole oscillante
@@ -150,7 +151,7 @@ export class Exercice extends Logic {
 
     this.currentModel.drawSetup(delta);
 
-    GL.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0);
+    GL.drawElements(GL.TRIANGLES,this.currentModel.indices.length, GL.UNSIGNED_SHORT, 0);
 
     this.currentModel.postDraw();
 
