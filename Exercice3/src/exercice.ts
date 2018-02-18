@@ -1,7 +1,7 @@
 import { Logic, loadAsync } from './main';
 import { GL, SetGL, IModel } from './models/modelTemplate';
 import { RefTriangle, TexturedTriangle } from './models/refTriangle';
-import { RefParabole } from './models/Parabole';
+import { RefParabole, ParaboleAnime } from './models/Parabole';
 import { mat4 } from 'gl-matrix';
 
 export class Exercice extends Logic {
@@ -11,7 +11,7 @@ export class Exercice extends Logic {
     blueSquare: undefined,      // 2.1 Carré bleu
     colorTriangle: undefined,   // 2.2 Triangle coloré
     yellowParabola: new RefParabole(),  // 2.3 Parabole jaune
-    yellowParabola2: undefined, // 2.4 Parabole oscillante
+    yellowParabola2: new ParaboleAnime(), // 2.4 Parabole oscillante
     texturedTriangle: new TexturedTriangle(),// (Référence) Triangle texturé
     texturedSquare: undefined,  // 3.1 Carré texturé
   };
