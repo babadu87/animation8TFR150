@@ -82,3 +82,36 @@ export class TexturedTriangle extends RefTriangle {
     GL.bindTexture(GL.TEXTURE_2D, null);
   }
 }
+
+export class ColorTriangle extends RefTriangle { 
+  private colorBuffer : WebGLBuffer;
+  vertexcolor : number;
+  vsSource = 'color.vert';
+  fsSource = 'color.frag';
+  vertices = [
+    -0.5, Math.sin(Math.PI / 3), 0, 1, 0,
+    1, 0, 0, 0.5, 1,
+    -0.5, -Math.sin(Math.PI / 3), 0, 0, 0,
+  ];
+  verticesStride = 5 * 4; // 5 composants * 32 bits
+
+  colors = [
+    1.0,  0.0,  0.0,  1.0,    // rouge
+    0.0,  1.0,  0.0,  1.0,    // vert
+    0.0,  0.0,  1.0,  1.0,    // bleu
+  ];
+
+  load() {
+    this.colorBuffer = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, this.colorBuffer);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(this.colors), GL.STATIC_DRAW);
+    return Promise.resolve();
+  }
+  postLoad(shader: WebGLProgram) {
+    this.vertexcolor = GL.getAttribLocation(shader, 'aVertexColor')
+    return Promise.resolve();
+  }
+
+  drawSetup() {
+  }
+}
