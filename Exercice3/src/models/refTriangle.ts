@@ -113,5 +113,17 @@ export class ColorTriangle extends RefTriangle {
   }
 
   drawSetup() {
+    const numComponents = 4;
+    const type = GL.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    const offset = 0;
+    GL.bindBuffer(GL.ARRAY_BUFFER, this.colorBuffer);
+    GL.vertexAttribPointer(this.vertexcolor,numComponents,type,normalize,stride,offset);
+    GL.enableVertexAttribArray(this.vertexcolor);
+  }
+  postDraw(){
+    
+    GL.disableVertexAttribArray(this.vertexcolor);
   }
 }
