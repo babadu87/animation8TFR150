@@ -33,8 +33,9 @@ export class RefCarre extends BaseModel {
 export class TexturedCarre extends RefCarre {
     private texture: WebGLTexture;
     private textureUniform: WebGLUniformLocation;
+    private TempsUniform: WebGLUniformLocation;
     private vertexUVAttrib: number;
-  
+    private temps:number;
     vsSource = 'textured.vert';
     fsSource = 'textured.frag';
     vertices = [
@@ -46,9 +47,14 @@ export class TexturedCarre extends RefCarre {
     verticesStride = 5 * 4; // 5 composants * 32 bits
   
     updateLogic(delta: number) {
+        this.temps += delta;
+        if(this.temps > 1){
+            this.temps -= 2;
+        }
       }
 
     load() {
+        this.temps = 0;
       this.loadTexture("img_tree");
       GL.enable(GL.BLEND);
       GL.disable(GL.DEPTH_TEST);
@@ -58,13 +64,14 @@ export class TexturedCarre extends RefCarre {
     postLoad(shader: WebGLProgram) {
       this.vertexUVAttrib = GL.getAttribLocation(shader, 'aVertexUV');
       this.textureUniform = GL.getUniformLocation(shader, 'uTexture');
+      this.TempsUniform = GL.getUniformLocation(shader, 'uTemps');
       return Promise.resolve();
     }
   
     drawSetup() {
       GL.enableVertexAttribArray(this.vertexUVAttrib);
       GL.vertexAttribPointer(this.vertexUVAttrib, 2, GL.FLOAT, false, 5 * 4, 3 * 4);
-  
+        GL.uniform1f(this.TempsUniform, this.temps);
       GL.activeTexture(GL.TEXTURE0);
       GL.bindTexture(GL.TEXTURE_2D, this.texture);
       GL.uniform1i(this.textureUniform, 0);
