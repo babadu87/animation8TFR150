@@ -3,7 +3,7 @@ import { GL, SetGL, IModel } from './models/modelTemplate';
 import { RefTriangle, TexturedTriangle, ColorTriangle } from './models/refTriangle';
 import { RefParabole, ParaboleAnime } from './models/Parabole';
 import { mat4 } from 'gl-matrix';
-import { RefCarre } from './models/refCarre';
+import { RefCarre, TexturedCarre } from './models/refCarre';
 
 export class Exercice extends Logic {
   private currentModel: IModel;
@@ -14,7 +14,7 @@ export class Exercice extends Logic {
     yellowParabola: new RefParabole(),  // 2.3 Parabole jaune
     yellowParabola2: new ParaboleAnime(), // 2.4 Parabole oscillante
     texturedTriangle: new TexturedTriangle(),// (Référence) Triangle texturé
-    texturedSquare: undefined,  // 3.1 Carré texturé
+    texturedSquare: new TexturedCarre(),  // 3.1 Carré texturé
   };
 
   private ready = false;
