@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src/",
+    "outDir": "./dist/",
+    "outFile":"./dist/merged.js",
+    "target": "es6",
+    "module": "amd",
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": true
+  }
+}

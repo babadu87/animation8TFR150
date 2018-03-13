@@ -50,6 +50,7 @@ export class ParaboleAnime extends RefParabole{
   postLoad(shader: WebGLProgram) {
     this.DeltaLoc = GL.getUniformLocation(shader, 'uDelta');
     this.CouleurLoc = GL.getUniformLocation(shader, 'Couleur');
+    
     return Promise.resolve();
   }
   updateLogic(delta:number){
