@@ -2,6 +2,7 @@ import { GL, BaseModel } from './modelTemplate';
 import { loadShader } from '../shaderLoad';
 import { mat4, vec3, quat } from 'gl-matrix';
 import { loadAsync } from '../main';
+import { Bone_Anim, Scene, Bone_Movement, scene_Anim } from './vecAnimScenario';
 
 // Fonction pour générer un modèle de debug avec squelette. Tres brut.
 function generateModel(vert: number[], ind: number[], skel: Skeleton) {
@@ -111,7 +112,9 @@ class Skeleton {
   boneTranslation: mat4[] = [];
   boneRotation: mat4[] = [];
   boneInverse: mat4[] = [];
-
+  elapsed: number = 0;
+  Bone_Anim_Angle_Inc: number[] = [0,0,0,0,0];
+  Bone_Anim_Angle: number[] = [0,0,0,0,0];
   pushBone(position: vec3, orientation: quat) {
     const newTrans = mat4.create();
     mat4.fromTranslation(newTrans, position);
@@ -134,9 +137,16 @@ class Skeleton {
   }
 
   update(delta: number) {
+    
     for (let [i, b] of this.boneRotation.entries()) {
-      let angle = (document.getElementById(`bone_${i}`) as HTMLInputElement).valueAsNumber;
-      mat4.fromZRotation(b, angle * Math.PI / 180);
+      //let angle = (document.getElementById(`bone_${i}`) as HTMLInputElement).valueAsNumber;
+      //mat4.fromZRotation(b, angle * Math.PI / 180);
+      this.elapsed +=  delta;
+      if(scene_Anim.scene[i].bone_Movement.length > 0 && this.elapsed >= scene_Anim.scene[i].bone_Movement[0].time){
+        this.Bone_Anim_Angle_Inc[i] = scene_Anim.scene[i].bone_Movement.shift().angle_inc;
+      }
+      this.Bone_Anim_Angle[i] += this.Bone_Anim_Angle_Inc[i]*delta;
+      mat4.fromZRotation(b, this.Bone_Anim_Angle[i] * Math.PI / 180);
     }
   }
 
@@ -226,4 +236,5 @@ export class VectorAnim extends BaseModel {
   debugDraw(vertexBuffer: WebGLBuffer, projection: mat4) {
     this.debug.draw(vertexBuffer, projection);
   }
+
 };
