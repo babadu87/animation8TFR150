@@ -141,16 +141,18 @@ class Skeleton {
   }
 
   update(delta: number) {
-    
+    mat4.fromZRotation(b, this.angleRotationMouse);
     for (let [i, b] of this.boneRotation.entries()) {
       let angle = (document.getElementById(`bone_${i}`) as HTMLInputElement).valueAsNumber;
       if(i == 0){
         mat4.fromZRotation(b, this.angleRotationMouse);
+        
       }
       else{
-        mat4.fromZRotation(b, angle * Math.PI / 180);
+        mat4.fromZRotation(b, this.angleRotationMouse);
       }
-      if(this.vectScaleMouse!=null){
+      
+      /*if(this.vectScaleMouse!=null){
         mat4.fromScaling(b,this.vectScaleMouse);
       }
       //mat4.fromZRotation(b, angle * Math.PI / 180);
@@ -167,9 +169,11 @@ class Skeleton {
       
     const x = coord.x / GL.canvas.width  *  2 - 1;
     const y = coord.y / GL.canvas.height * -2 + 1;
-    this.angleRotationMouse = Math.atan(((this.positionTab[0][0])-x)/(this.positionTab[0][1]+y) * Math.PI / 180);
-    this.vectScaleMouse =  vec3.fromValues(x, y, 0)
-    //console.log(`Curseur: (${x},${y})`);
+    this.Bone_Anim_Angle.
+    this.angleRotationMouse = (Math.atan2((-y+this.positionTab[0][1]),(x-this.positionTab[0][0])) * (180 / Math.PI)) /100;
+    
+    //this.vectScaleMouse =  vec3.fromValues(coord.x, 1, 0)
+    console.log( Math.atan2((-y+this.positionTab[0][1]),(x-this.positionTab[0][0]))*x);
   }
 
   toArray() {
