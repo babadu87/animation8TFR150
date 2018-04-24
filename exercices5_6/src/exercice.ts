@@ -5,6 +5,7 @@ import { RefTriangle, TexturedTriangle } from './models/refTriangle';
 import { SpriteAnim } from './models/spriteAnim';
 import { VectorAnim } from './models/vecAnim';
 import { mat4 } from 'gl-matrix';
+import { MassSpring } from './models/massSpring'
 
 export class Exercice extends Logic {
   private currentModel: IModel;
@@ -18,7 +19,7 @@ export class Exercice extends Logic {
     texturedSquare: undefined,  // 3.1 Carré texturé
     spriteAnim: new SpriteAnim(),  // 4 Animation de sprites
     vectorAnim: new VectorAnim(), // 5 Animation vectorielle
-    massSpring: undefined,      // 6 Système masse-ressort
+    massSpring: new MassSpring(),      // 6 Système masse-ressort
   };
 
   private ready = false;
