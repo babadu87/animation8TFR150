@@ -4,8 +4,8 @@ import { GL, SetGL, IModel } from './models/modelTemplate';
 import { RefTriangle, TexturedTriangle } from './models/refTriangle';
 import { SpriteAnim } from './models/spriteAnim';
 import { VectorAnim } from './models/vecAnim';
+import { MassSpring } from './models/massSpring';
 import { mat4 } from 'gl-matrix';
-import { MassSpring } from './models/massSpring'
 
 export class Exercice extends Logic {
   private currentModel: IModel;

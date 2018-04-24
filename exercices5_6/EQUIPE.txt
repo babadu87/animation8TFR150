@@ -1,0 +1,4 @@
+Henrick Savard - SAVH14129401
+Baptiste Boismorand - BOIB10089509
+
+Action pour l'exercice 6: Cliquer (active au mouseup)

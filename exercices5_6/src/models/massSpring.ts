@@ -71,11 +71,11 @@ class DrawDebug {
     GL.disableVertexAttribArray(this.vertexPositionAttrib);
   }
 }
-const Mass = 1;
-const Elast = 0.4;
+const Mass = 5;
+const Elast = 0.49;
 const N = 20;
-const Amort = 0.4;
-;
+const Amort = 0.49;
+
 interface Lien{
   P1: number;
   P2: number;
@@ -89,6 +89,14 @@ interface Point{
   Force:vec2;
   i:number;
 }
+
+function getMousePos(evt:MouseEvent) {
+  var rect = GL.canvas.getBoundingClientRect();
+  return {
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
+  };
+}
 export class MassSpring extends RefCarre {
     private textures: WebGLTexture[];
     private textureLoc: WebGLUniformLocation;
@@ -99,7 +107,7 @@ export class MassSpring extends RefCarre {
     private Delta:number;
     private Liens: Lien[] = [];
     private Points: Point[] = [];
-     
+    private Souris: Point;
     vsSource = 'massspring.vert';
     fsSource = 'massspring.frag';
     vertices:number[];
@@ -112,6 +120,8 @@ export class MassSpring extends RefCarre {
     this.indices = [];
     this.Mesh(N);
     this.debug = new DrawDebug(this);
+    this.Souris = {X: null, Y: null,
+      Velocite:vec2.fromValues(0,0), Lock:false, i:0, Force:vec2.fromValues(0,0)};
     
   }
   private ifLienExiste(X:number, Y:number){
@@ -122,11 +132,13 @@ export class MassSpring extends RefCarre {
     });
     return false;
   }
+  
   Mesh(NbSommets:number){
     let Taille: number = 0.75*2;
     let PasUV = 0;
      
     let i:number = 0;
+    let u:number = 0;
     let PasXY = 0;
     if(NbSommets >= 2){
       PasXY = Taille/(NbSommets-1);
@@ -134,14 +146,14 @@ export class MassSpring extends RefCarre {
     }
     this.normalLength = PasXY;
     this.MaxLength = this.normalLength * 1.2;
-    for(let x:number = 0; x<NbSommets; x++){
-      for(let y:number = 0; y<NbSommets; y++){
+    for(let x:number = 0; x<NbSommets; x++, u++){
+      for(let y:number = 0; y<NbSommets; y++, u++){
       this.vertices.push(
         -(Taille/2)+(PasXY*x), -(Taille/2)+(PasXY*y), 0, (x*PasUV), (y*PasUV)
       );
       
       this.Points.push({X: -(Taille/2)+(PasXY*x),Y:-(Taille/2)+(PasXY*y),
-        Velocite:vec2.fromValues(0,0), Lock:false, i:0, Force:vec2.fromValues(0,0)});
+        Velocite:vec2.fromValues(0,0), Lock:false, i:u, Force:vec2.fromValues(0,0)});
     }
   }
   for(let l:number=0; l<N*N; l++){
@@ -204,6 +216,9 @@ export class MassSpring extends RefCarre {
       this.loadTexture(["img_tree"]);
       GL.enable(GL.BLEND);
       GL.disable(GL.DEPTH_TEST);
+      GL.canvas.onmouseup = (evt:MouseEvent) => {
+        this.GetMousePos(getMousePos(evt));
+      };
       return this.debug.load();
     }
     private getVertexCoords(numCarre: number, numPoint:number):number{
@@ -214,12 +229,35 @@ export class MassSpring extends RefCarre {
       this.Liens.forEach(l => {
         this.ComputeForceElas(l);
       });
-
       for(let x:number = 0; x<(N*N); x++){
+          this.simulateRepulsMouse(this.Points[x], {x:this.Souris.X, y:this.Souris.Y});
         this.Simulate(this.Points[x], delta);
         this.vertices[(x*5)] = this.Points[x].X;
         this.vertices[(x*5)+1] = this.Points[x].Y;
         this.Points[x].Force = vec2.fromValues(0,0);
+      }
+      this.ResetMousePos();
+    }
+    private GetMousePos(coord:{x:number, y:number}){
+      const x = coord.x / GL.canvas.width  *  2 - 1;
+      const y = coord.y / GL.canvas.height * -2 + 1;
+      this.Souris.X = x;
+      this.Souris.Y = y;
+    }
+    private ResetMousePos(){
+      this.Souris.X = null;
+      this.Souris.Y = null;
+    }
+    private simulateRepulsMouse(point:Point, m:{x:number, y:number}){
+      if(m.x != null){
+      let distance:vec2 = vec2.fromValues(m.x-point.X, -m.y-point.Y);
+
+      let distanceNormal:vec2 = vec2.fromValues(0,0);
+      vec2.normalize(distanceNormal, distance);
+        
+      let attractForce:vec2 = vec2.fromValues(distanceNormal[0]*((0.1 * 0.1 * Mass) / (distance[0] * distance[0])),distanceNormal[1]*((0.1 * 0.1 * Mass) / (distance[1] * distance[1])));
+      
+      vec2.add(point.Force, point.Force, attractForce);
       }
     }
     private CalcLong(P1:number, P2:number):number{
@@ -251,11 +289,10 @@ export class MassSpring extends RefCarre {
       let Point2:Point = this.Points[lien.P2];
       let deltaV:vec2 = vec2.fromValues(Point2.Velocite[0]-Point1.Velocite[0],Point2.Velocite[1]-Point1.Velocite[0]);
       let damperforce:number = vec2.dot(ressortN, deltaV);
-      let restoreForce:vec2 = vec2.fromValues((ressortN[0]*(deplac*Elast))+(damperforce*Amort),(ressortN[1]*(deplac*Elast))+(damperforce*Amort));
+      let restoreForce:vec2 = vec2.fromValues(((ressortN[0]*(deplac*Elast))+(damperforce*Amort))*2.4,((ressortN[1]*(deplac*Elast))+(damperforce*Amort))*2.4);
       
       vec2.add(this.Points[lien.P1].Force, this.Points[lien.P1].Force, restoreForce);
       vec2.sub(this.Points[lien.P2].Force, this.Points[lien.P2].Force, restoreForce);
-      
 
     }
     /*
