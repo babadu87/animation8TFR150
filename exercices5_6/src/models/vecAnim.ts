@@ -119,17 +119,23 @@ class Skeleton {
   angleRotationMouse: number = 0;
   vectScaleMouse: vec3;
   DistMouse: number;
+  Backups: Bone_Movement[][];
+  Exercice: number;
+  BoneDone: boolean[] = [false, false, false, false, false];
+  BoneStep: number[] = [-1,-1,-1,-1,-1];
+  iter:number = 0;
+  SetExo(exo:number){
+    this.Exercice = exo;
+  }
   pushBone(position: vec3, orientation: quat) {
     this.positionTab.push(position);
     const newTrans = mat4.create();
     mat4.fromTranslation(newTrans, position);
     this.boneTranslation.push(newTrans);
-    console.log(newTrans);
 
     const newRot = mat4.create();
     mat4.fromQuat(newRot, orientation);
     this.boneRotation.push(newRot);
-    //console.log(this.boneRotation);
     const boneMat = mat4.create();
     mat4.mul(boneMat, newTrans, newRot);
 
@@ -142,11 +148,62 @@ class Skeleton {
     this.boneInverse.push(invBone);
   }
   update(delta: number) {
-    //mat4.fromZRotation(b, this.angleRotationMouse);
+    switch(this.Exercice){
+      case 0: this.Exercice5_2(delta);
+        break;
+      case 1: this.Exercice5_3();
+      break;
+
+    }  
+  
+  }
+  private Exercice5_2(delta:number){
+    this.elapsed +=  delta;
     for (let [i, b] of this.boneRotation.entries()) {
+      
+      
+      if(scene_Anim.scene[i].bone_Movement.length == 0){
+        this.BoneDone[i] = true;
+      }
+      if(scene_Anim.scene[i].bone_Movement.length > 0 && this.elapsed >= scene_Anim.scene[i].bone_Movement[0].time){
+        if(this.BoneStep[i] > scene_Anim.scene[i].bone_Movement.length+1 && !this.BoneDone[i]){
+          this.BoneDone[i] = true;
+        }else{
+          this.BoneStep[i]++;
+        }
+        //scene_Anim.scene[i].bone_Movement.push(scene_Anim.scene[i].bone_Movement.shift());
+        let Backup: Bone_Movement = scene_Anim.scene[i].bone_Movement.shift();
+        this.Bone_Anim_Angle_Inc[i] = Backup.angle_inc;
+        scene_Anim.scene[i].bone_Movement.push(Backup);
+       
+        
+        
+      }
+      
+      this.Bone_Anim_Angle[i] += this.Bone_Anim_Angle_Inc[i]*delta;
+      mat4.fromZRotation(b, this.Bone_Anim_Angle[i] * Math.PI / 180);
+    }
+    if(this.BoneDone[0] && this.BoneDone[1] && this.BoneDone[2] && this.BoneDone[3] && this.BoneDone[4]){
+      this.elapsed = 0;
+      console.log("RESET");
+      for (let [i, b] of this.boneRotation.entries()) {
+        this.BoneDone[i] = false;
+        this.BoneStep[i] = -1;
+        this.Bone_Anim_Angle_Inc[i] = 0;
+        this.Bone_Anim_Angle[i] = 0;
+        mat4.fromZRotation(b, 0);
+
+      }
+    }
+  }
+  private Exercice5_3(){
+    for (let [i, b] of this.boneRotation.entries()) {
+
       let angle = (document.getElementById(`bone_${i}`) as HTMLInputElement).valueAsNumber;
       if(i == 0){
-        mat4.fromZRotation(b, this.angleRotationMouse);
+        mat4.fromZRotation(b, this.angleRotationMouse + (angle * Math.PI / 180));
+      }else{
+        mat4.fromZRotation(b, (angle * Math.PI / 180));
       }
     }
     for(let [i, b] of this.boneTranslation.entries()){
@@ -154,16 +211,6 @@ class Skeleton {
         mat4.fromTranslation(b,[this.DistMouse/2.75, 0, 0]);
       }
     }
-      
-      
-      //mat4.fromZRotation(b, angle * Math.PI / 180);
-      //this.elapsed +=  delta;
-      /*if(scene_Anim.scene[i].bone_Movement.length > 0 && this.elapsed >= scene_Anim.scene[i].bone_Movement[0].time){
-        this.Bone_Anim_Angle_Inc[i] = scene_Anim.scene[i].bone_Movement.shift().angle_inc;
-      }
-      this.Bone_Anim_Angle[i] += this.Bone_Anim_Angle_Inc[i]*delta;
-      mat4.fromZRotation(b, this.Bone_Anim_Angle[i] * Math.PI / 180);*/
-    
   }
 
   onMouseMove(coord:{x:number, y:number}) {
@@ -211,8 +258,9 @@ export class VectorAnim extends BaseModel {
   indices:number[] = [];
   verticesStride = 9 * 4; // 9 composants * 32 bits
 
-  constructor() {
+  constructor(Exo:number) {
     super();
+    this.skeleton.SetExo(Exo);
     generateModel(this.vertices, this.indices, this.skeleton);
     this.debug = new DrawDebug(this, this.skeleton);
   }

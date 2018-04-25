@@ -18,7 +18,8 @@ export class Exercice extends Logic {
     texturedTriangle: new TexturedTriangle(),// (Référence) Triangle texturé
     texturedSquare: undefined,  // 3.1 Carré texturé
     spriteAnim: new SpriteAnim(),  // 4 Animation de sprites
-    vectorAnim: new VectorAnim(), // 5 Animation vectorielle
+    vectorAnim1: new VectorAnim(0), // 5 Animation vectorielle classique
+    vectorAnim2: new VectorAnim(1), // 5 Animation vectorielle inverse
     massSpring: new MassSpring(),      // 6 Système masse-ressort
   };
 
